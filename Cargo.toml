@@ -1,0 +1,9 @@
+[workspace]
+members = ["*/"]
+exclude = ["target"]
+resolver = "2"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[workspace.dependencies]
+anyhow = "1.0.75"
