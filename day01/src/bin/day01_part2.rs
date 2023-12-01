@@ -5,24 +5,24 @@ use utils::get_input_file;
 fn replace_str_with_num(s: String, table: &HashMap<&str, &str>) -> String {
     // basic idea: shift window across string, replace name of number with number in each window,
     // append the (modified) window to the result string
+    let s_len = s.len();
     let mut res = String::new();
     let mut start_idx = 0;
 
     loop {
-        let end_idx = min(start_idx + 5, s.len());
+        let end_idx = min(start_idx + 5, s_len);
         let win = s[start_idx..end_idx].to_owned();
         let mut rep = String::new();
-        for key in table.keys() {
-            rep = win.replace(key, table.get(key).unwrap());
+        for (key, val) in table.iter() {
+            rep = win.replace(key, val);
             if rep.len() < win.len() {
                 // we found a name so the replaced string is shorter
                 break;
             }
         }
-        // if no name was found, we just append the window since it may still contain numbers
-        res = format!("{res}{rep}{win}");
+        res = format!("{res}{rep}");
 
-        if start_idx >= s.len() {
+        if start_idx >= s_len {
             res = res.chars().filter(|c| c.is_digit(10)).collect();
             break res;
         }
