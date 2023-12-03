@@ -13,6 +13,12 @@ pub fn get_input_file() -> Result<Lines> {
     read_lines(get_path_from_args()?)
 }
 
+pub fn get_input_file_as_string() -> Result<String> {
+    Ok(get_input_file()?
+        .collect::<Result<Vec<String>, _>>()?
+        .join("\n"))
+}
+
 fn read_lines<P>(filename: P) -> Result<Lines>
 where
     P: AsRef<Path>,
@@ -22,7 +28,7 @@ where
     Ok(BufReader::new(file).lines())
 }
 
-fn get_path_from_args() -> Result<PathBuf> {
+pub fn get_path_from_args() -> Result<PathBuf> {
     Ok(PathBuf::from(
         env::args().nth(1).context("No argument passed")?,
     ))
