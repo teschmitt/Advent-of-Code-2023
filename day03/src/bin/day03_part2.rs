@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use anyhow::{Context, Result};
 use utils::{get_input_file, Lines};
 
-#[derive(Clone, Debug, Hash, Eq, PartialEq)]
+#[derive(Clone, Debug, Default, Hash, Eq, PartialEq)]
 struct Coord {
     row: usize,
     col: usize,
@@ -23,7 +23,7 @@ struct Schematic {
     cols: usize,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 struct Hit {
     value: u64,
     gear_coord: Coord,
@@ -136,12 +136,8 @@ impl Schematic {
                 .iter()
                 .skip(skip)
                 .filter(|g| g.gear_coord == gear.gear_coord)
-                .last()
-                .unwrap_or(&Hit {
-                    value: 0,
-                    gear_coord: Coord { row: 0, col: 0 },
-                });
-            sum += gear.value * part_two.value;
+                .last();
+            sum += gear.value * part_two.unwrap_or(&Default::default()).value;
             skip += 1;
         }
         sum
