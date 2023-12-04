@@ -4,3 +4,5 @@ day="day$1"
 cp -r ./template "./$day"
 cd "./$day"
 sed -i '' "s|testday|$day|g" Cargo.toml
+mv "./src/bin/dayxx_part1.rs"  "./src/bin/day${day}_part1.rs"
+mv "./src/bin/dayxx_part2.rs"  "./src/bin/day${day}_part2.rs"

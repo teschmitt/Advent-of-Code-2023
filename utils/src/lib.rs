@@ -1,4 +1,9 @@
 use anyhow::{Context, Result};
+use nom::{
+    character::complete::digit1,
+    combinator::{map_res, recognize},
+    IResult,
+};
 use std::{
     env,
     fs::File,
@@ -32,4 +37,8 @@ pub fn get_path_from_args() -> Result<PathBuf> {
     Ok(PathBuf::from(
         env::args().nth(1).context("No argument passed")?,
     ))
+}
+
+pub fn get_u64(input: &str) -> IResult<&str, u64> {
+    map_res(recognize(digit1), str::parse)(input)
 }
