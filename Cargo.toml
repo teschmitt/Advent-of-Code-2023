@@ -1,6 +1,6 @@
 [workspace]
 members = ["*/"]
-exclude = ["target", ".git"]
+exclude = ["template", "target", ".git"]
 resolver = "2"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
