@@ -41,6 +41,6 @@ fn main() -> Result<()> {
 fn space_sep_decimal(input: &str) -> IResult<&str, u64> {
     map_res(
         recognize(many1(terminated(one_of("0123456789"), many0(char(' '))))),
-        |out: &str| u64::from_str_radix(&str::replace(&out, " ", ""), 10),
+        |out: &str| str::replace(&out, " ", "").parse::<u64>(),
     )(input)
 }
