@@ -1,7 +1,7 @@
 use anyhow::Result;
 use nom::{
     bytes::complete::tag,
-    character::complete::{char, multispace1, one_of},
+    character::complete::{multispace1, newline, one_of, space1},
     combinator::{all_consuming, map, map_res, recognize},
     multi::{many0, many1},
     sequence::{preceded, terminated, tuple},
@@ -16,7 +16,7 @@ fn main() -> Result<()> {
         all_consuming(tuple((
             preceded(
                 tuple((tag("Time:"), multispace1)),
-                tuple((space_sep_decimal, char('\n'))),
+                tuple((space_sep_decimal, newline)),
             ),
             preceded(tuple((tag("Distance:"), multispace1)), space_sep_decimal),
         ))),
@@ -40,7 +40,7 @@ fn main() -> Result<()> {
 
 fn space_sep_decimal(input: &str) -> IResult<&str, u64> {
     map_res(
-        recognize(many1(terminated(one_of("0123456789"), many0(char(' '))))),
+        recognize(many1(terminated(one_of("0123456789"), many0(space1)))),
         |out: &str| str::replace(&out, " ", "").parse::<u64>(),
     )(input)
 }
