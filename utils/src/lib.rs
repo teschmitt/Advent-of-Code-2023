@@ -1,7 +1,9 @@
 use anyhow::{Context, Result};
 use nom::{
+    bytes::complete::tag,
     character::complete::digit1,
-    combinator::{map_res, recognize},
+    combinator::{map_res, opt, recognize},
+    sequence::tuple,
     IResult,
 };
 use std::{
@@ -9,6 +11,7 @@ use std::{
     fs::File,
     io::{self, BufRead, BufReader},
     path::{Path, PathBuf},
+    str::FromStr,
 };
 
 pub type Lines = io::Lines<BufReader<File>>;
@@ -41,4 +44,8 @@ pub fn get_path_from_args() -> Result<PathBuf> {
 
 pub fn get_u64(input: &str) -> IResult<&str, u64> {
     map_res(recognize(digit1), str::parse)(input)
+}
+
+pub fn get_num<NUM: FromStr>(input: &str) -> IResult<&str, NUM> {
+    map_res(recognize(tuple((opt(tag("-")), digit1))), NUM::from_str)(input)
 }
