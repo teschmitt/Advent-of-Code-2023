@@ -86,6 +86,14 @@ impl From<Vec<Vec<MapTile>>> for FieldMap {
     }
 }
 
+#[derive(Debug)]
+struct FieldMap {
+    map: HashMap<Coord, MapTile>,
+    rows: usize,
+    cols: usize,
+    start_coord: Coord,
+}
+
 impl FieldMap {
     fn get(&self, pos: &Coord) -> &MapTile {
         self.map
@@ -139,38 +147,30 @@ impl FieldMap {
 
     /// fetches the direction the adjacents are located at and their coords
     fn get_start_adjacents(&self) -> [Direction; 2] {
-        use MapTile::*;
+        use self::{Direction::*, MapTile::*};
         let start = &self.start_coord;
         let mut dir: Vec<Direction> = vec![];
         if start.row > 0 {
             match self.get(&(start.row - 1, start.col).into()) {
-                SouthEast | SouthWest | NorthSouth => {
-                    dir.push(Direction::North);
-                }
+                SouthEast | SouthWest | NorthSouth => dir.push(North),
                 _ => (),
             };
         };
         if start.row < self.rows - 1 {
             match self.get(&(start.row + 1, start.col).into()) {
-                NorthEast | NorthWest | NorthSouth => {
-                    dir.push(Direction::South);
-                }
+                NorthEast | NorthWest | NorthSouth => dir.push(South),
                 _ => (),
             };
         };
         if start.col > 0 {
             match self.get(&(start.row, start.col - 1).into()) {
-                SouthEast | NorthEast | EastWest => {
-                    dir.push(Direction::West);
-                }
+                SouthEast | NorthEast | EastWest => dir.push(West),
                 _ => (),
             };
         };
         if start.col < self.cols - 1 {
             match self.get(&(start.row, start.col + 1).into()) {
-                NorthWest | SouthWest | EastWest => {
-                    dir.push(Direction::East);
-                }
+                NorthWest | SouthWest | EastWest => dir.push(East),
                 _ => (),
             };
         };
@@ -185,12 +185,14 @@ impl FieldMap {
     }
 }
 
-#[derive(Debug)]
-struct FieldMap {
-    map: HashMap<Coord, MapTile>,
-    rows: usize,
-    cols: usize,
-    start_coord: Coord,
+fn update_inside(tile: &MapTile, inside: bool) -> bool {
+    match tile {
+        MapTile::NorthWest | MapTile::SouthEast => inside,
+        MapTile::NorthEast | MapTile::NorthSouth | MapTile::EastWest | MapTile::SouthWest => {
+            !inside
+        }
+        t => panic!("Encountered unexpected tile type '{t:?}'"),
+    }
 }
 
 fn main() -> Result<()> {
@@ -253,16 +255,7 @@ fn main() -> Result<()> {
 
         while row > 0 && col < cols - 1 {
             if let Some(tile) = clean_map.map.get(&(row, col).into()) {
-                match tile {
-                    MapTile::NorthWest | MapTile::SouthEast => (),
-                    MapTile::NorthEast
-                    | MapTile::NorthSouth
-                    | MapTile::EastWest
-                    | MapTile::SouthWest => {
-                        inside = !inside;
-                    }
-                    t => panic!("Encountered unexpected tile type '{t:?}'"),
-                };
+                inside = update_inside(tile, inside);
             } else {
                 if inside {
                     area += 1;
@@ -272,16 +265,7 @@ fn main() -> Result<()> {
             col += 1;
         }
         if let Some(tile) = clean_map.map.get(&(row, col).into()) {
-            match tile {
-                MapTile::NorthWest | MapTile::SouthEast => (),
-                MapTile::NorthEast
-                | MapTile::NorthSouth
-                | MapTile::EastWest
-                | MapTile::SouthWest => {
-                    inside = !inside;
-                }
-                t => panic!("Encountered unexpected tile type '{t:?}'"),
-            };
+            inside = update_inside(tile, inside);
         } else {
             if inside {
                 area += 1;
